@@ -27,15 +27,9 @@ http://www.gnu.org/licenses/gpl.html
   });
 
   $.fn.parallax = function(xpos, speedFactor, outerHeight) {
-    var $this = $(this);
-    var getHeight;
-    var firstTop;
-    var paddingTop = 0;
-    
-    //get the starting position of each element to have parallax applied to it    
-    $this.each(function(){
-        firstTop = $this.offset().top;
-    });
+    var getHeight,
+        firstTop,
+        $this = this;
 
     if (outerHeight) {
       getHeight = function(jqo) {
@@ -47,6 +41,13 @@ http://www.gnu.org/licenses/gpl.html
       };
     }
       
+    firstTop = function(jqo) {
+      if( typeof jqo.data('firstTop') === 'undefined')
+        jqo.data( 'firstTop', parseInt( jqo.css('backgroundPosition').split(" ")[1] ) );
+
+      return jqo.data('firstTop')
+    }
+
     // setup defaults if arguments aren't specified
     if (arguments.length < 1 || xpos === null) xpos = "50%";
     if (arguments.length < 2 || speedFactor === null) speedFactor = 0.1;
@@ -60,13 +61,14 @@ http://www.gnu.org/licenses/gpl.html
         var $element = $(this);
         var top = $element.offset().top;
         var height = getHeight($element);
-
+        var ypos = firstTop($element);
+        
         // Check if totally above or totally below viewport
         if (top + height < pos || top > pos + windowHeight) {
           return;
         }
 
-        $this.css('backgroundPosition', xpos + " " + Math.round((firstTop - pos) * speedFactor) + "px");
+        $element.css('backgroundPosition', xpos + " " + (ypos + Math.round((top - (pos + windowHeight)) * speedFactor)) + "px");
       });
     }   
 
@@ -74,3 +76,4 @@ http://www.gnu.org/licenses/gpl.html
     update();
   };
 }));
+
