@@ -1,81 +1,130 @@
 /*
-Plugin: jQuery Parallax
-Version 1.1.3
-Author: Ian Lunn
-Twitter: @IanLunn
-Author URL: http://www.ianlunn.co.uk/
-Plugin URL: http://www.ianlunn.co.uk/plugins/jquery-parallax/
+Plugin: jQuery Simple Parallax
+Version 0.1
+Author: Jason Hummel
+Twitter: @jhummel
+Author URL: http://www.wearechalk.com/
+Plugin URL: http://www.github.com/madebychalk/jQuery-Parallax
 
 Dual licensed under the MIT and GPL licenses:
 http://www.opensource.org/licenses/mit-license.php
 http://www.gnu.org/licenses/gpl.html
+
+Inspired by jQuery Prallax by Ian Lunn
+https://github.com/IanLunn/jQuery-Parallax
 */
 
-(function (factory) {
-  if (typeof define === 'function' && define.amd) {
+(function(factory) {
+  if(typeof define === 'function' && define.amd) {
     define(['jquery'], factory);
   } else {
-    factory(jQuery);
+    factory(jQuery, window);
   }
-}(function ($) {
+})(function($, undefined){
+  'use strict';
 
-  var $window = $(window);
-  var windowHeight = $window.height();
+  var Pub, 
+      Parallax,
+      guid,
+      $window = $(window),
+      scrollTop = $window.scrollTop(),
+      windowHeight = $window.height();
 
-  $window.resize(function () {
-    windowHeight = $window.height();
-  });
+  $window.on('resize', function(){ windowHeight = $window.height(); });
+  $window.on('scroll', function(){ Pub.notify(); });
 
-  $.fn.parallax = function(xpos, speedFactor, outerHeight) {
-    var getHeight,
-        firstTop,
-        $this = this;
-
-    if (outerHeight) {
-      getHeight = function(jqo) {
-        return jqo.outerHeight(true);
-      };
-    } else {
-      getHeight = function(jqo) {
-        return jqo.height();
-      };
-    }
-      
-    firstTop = function(jqo) {
-      if( typeof jqo.data('firstTop') === 'undefined')
-        jqo.data( 'firstTop', parseInt( jqo.css('backgroundPosition').split(" ")[1] ) );
-
-      return jqo.data('firstTop')
-    }
-
-    // setup defaults if arguments aren't specified
-    if (arguments.length < 1 || xpos === null) xpos = "50%";
-    if (arguments.length < 2 || speedFactor === null) speedFactor = 0.1;
-    if (arguments.length < 3 || outerHeight === null) outerHeight = true;
-    
-    // function to be called whenever the window is scrolled or resized
-    function update(){
-      var pos = $window.scrollTop();        
-
-      $this.each(function(){
-        var $element = $(this);
-        var top = $element.offset().top;
-        var height = getHeight($element);
-        var ypos = firstTop($element);
-        
-        // Check if totally above or totally below viewport
-        if (top + height < pos || top > pos + windowHeight) {
-          return;
-        }
-
-        $element.css('backgroundPosition', xpos + " " + (ypos + Math.round((top - (pos + windowHeight)) * speedFactor)) + "px");
-      });
-    }   
-
-    $window.bind('scroll', update).resize(update);
-    update();
-
-    return this;
+  guid = function() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+        return v.toString(16);
+    });
   };
-}));
+
+  Pub = (function(){
+    var subscribers = {};
+
+    return {
+      subscribe: function(id, obj){
+        subscribers[id] = obj;
+      },
+
+      remove: function(id){
+        delete subscribers[id];
+      },
+
+      notify: function() {
+        scrollTop = $window.scrollTop();
+        $.each(subscribers, function(k,v){
+          v.update();
+        });
+      }
+    };
+  })();
+
+  Parallax = function(jqo, options){
+    this.options  = options;
+    this.$el      = jqo;
+    this.ypos = parseInt( jqo.css('backgroundPosition').split(" ")[1] );
+    this.guid = guid();
+    this.refresh();
+
+    Pub.subscribe(this.guid, this);
+  };
+
+
+  Parallax.prototype = {
+    _onScreen: function() {
+      return !(this.top + this.height < this.pos || this.top > this.pos + windowHeight)
+    },
+
+    _getHeight: function() {
+      return (this.options.outerHeight) ?
+        this.$el.outerHeight(true) :
+        this.$el.height();
+    },
+
+    refresh: function() {
+      this.height = this._getHeight();
+      this.top = this.$el.offset().top;
+    },
+
+    update: function() {
+      if( this._onScreen() )
+        this.$el.css('backgroundPosition', this.options.xpos + " " + (this.ypos + Math.round((this.top - (scrollTop + windowHeight)) * this.options.speed)) + "px");
+    },
+
+    destroy: function() {
+      Pub.remove(this.guid);
+    }
+  };
+
+  $.fn.parallax = function(options) {
+    var args  = $.makeArray(arguments),
+        after = args.slice(1);
+
+    return this.each(function() {
+      var instance,
+          $el = $(this);
+
+      instance = $el.data('parallax');
+
+      if(instance) {
+        instance[args[0]].apply(instance, after);
+      } else {
+        options = $.extend({
+          xpos: '50%',
+          speed: 0.25,
+          outerHeight: true
+        }, options);
+
+        $el.data( 'parallax', new Parallax($el, options) );
+      }
+
+    });
+  };
+
+});
+
+
+
 
