@@ -89,12 +89,13 @@ https://github.com/IanLunn/jQuery-Parallax
     this.refresh();
 
     Pub.subscribe(this.guid, this);
+    this.update();
   };
 
 
   Parallax.prototype = {
     _onScreen: function() {
-      return !(this.top + this.height < this.pos || this.top > this.pos + windowHeight)
+      return !(this.top + this.height < scrollTop || this.top > scrollTop + windowHeight)
     },
 
     _getHeight: function() {
