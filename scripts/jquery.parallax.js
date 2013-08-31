@@ -64,7 +64,7 @@ https://github.com/IanLunn/jQuery-Parallax
             key;
 
         for(key in subscribers) {
-          if(obj.hasOwnProperty(key)) size++;
+          if(subscribers.hasOwnProperty(key)) size++;
         } 
 
         return size;
