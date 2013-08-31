@@ -31,7 +31,11 @@ https://github.com/IanLunn/jQuery-Parallax
       scrollTop = $window.scrollTop(),
       windowHeight = $window.height();
 
-  $window.on('resize', function(){ windowHeight = $window.height(); });
+  $window.on('resize', function(){ 
+    windowHeight = $window.height(); 
+    Pub.notify(); 
+  });
+
   $window.on('scroll', function(){ Pub.notify(); });
 
   guid = function() {
