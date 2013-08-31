@@ -147,6 +147,10 @@ https://github.com/IanLunn/jQuery-Parallax
   $.Parallax = {
     destroy_all: function() {
       Pub.remove_all();
+    },
+
+    count: function() {
+      return Pub.count();
     }
   };
 
