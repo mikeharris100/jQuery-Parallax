@@ -26,6 +26,7 @@ https://github.com/IanLunn/jQuery-Parallax
   var Pub, 
       Parallax,
       guid,
+      parseArgs,
       $window = $(window),
       scrollTop = $window.scrollTop(),
       windowHeight = $window.height();
@@ -52,11 +53,19 @@ https://github.com/IanLunn/jQuery-Parallax
         delete subscribers[id];
       },
 
+      each: function(func) {
+        $.each(subscribers, function(k,v) {
+          func.apply(v);
+        });
+      },
+
+      remove_all: function() {
+        this.each(function(){ this.destroy(); });
+      },
+
       notify: function() {
         scrollTop = $window.scrollTop();
-        $.each(subscribers, function(k,v){
-          v.update();
-        });
+        this.each(function(){ this.update(); });
       }
     };
   })();
@@ -95,6 +104,7 @@ https://github.com/IanLunn/jQuery-Parallax
 
     destroy: function() {
       Pub.remove(this.guid);
+      this.$el.removeData('parallax');
     }
   };
 
@@ -121,6 +131,12 @@ https://github.com/IanLunn/jQuery-Parallax
       }
 
     });
+  };
+
+  $.Parallax = {
+    destroy_all: function() {
+      Pub.remove_all();
+    }
   };
 
 });
