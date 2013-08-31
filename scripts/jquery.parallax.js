@@ -59,6 +59,17 @@ https://github.com/IanLunn/jQuery-Parallax
         });
       },
 
+      count: function() {
+        var size = 0,
+            key;
+
+        for(key in subscribers) {
+          if(obj.hasOwnProperty(key)) size++;
+        } 
+
+        return size;
+      },
+
       remove_all: function() {
         this.each(function(){ this.destroy(); });
       },
