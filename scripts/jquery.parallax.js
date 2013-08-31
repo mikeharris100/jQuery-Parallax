@@ -121,6 +121,7 @@ https://github.com/IanLunn/jQuery-Parallax
     destroy: function() {
       Pub.remove(this.guid);
       this.$el.removeData('parallax');
+      this.$el.css('backgroundPosition', '');
     }
   };
 
