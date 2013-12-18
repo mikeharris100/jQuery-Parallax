@@ -88,6 +88,7 @@ https://github.com/IanLunn/jQuery-Parallax
   Parallax = function(jqo, options){
     this.options  = options;
     this.$el      = jqo;
+    this.xpos = parseInt( jqo.css('backgroundPosition').split(" ")[0] );
     this.ypos = parseInt( jqo.css('backgroundPosition').split(" ")[1] );
     this.guid = guid();
     this.refresh();
@@ -115,7 +116,7 @@ https://github.com/IanLunn/jQuery-Parallax
 
     update: function() {
       if( this._onScreen() )
-        this.$el.css('backgroundPosition', this.options.xpos + " " + (this.ypos + Math.round((this.top - scrollTop) * this.options.speed)) + "px");
+        this.$el.css('backgroundPosition', this.xpos + " " + (this.ypos + Math.round((this.top - scrollTop) * this.options.speed)) + "px");
     },
 
     destroy: function() {
@@ -139,7 +140,6 @@ https://github.com/IanLunn/jQuery-Parallax
         instance[args[0]].apply(instance, after);
       } else {
         options = $.extend({
-          xpos: '50%',
           speed: 0.25,
           outerHeight: true
         }, options);
@@ -161,7 +161,3 @@ https://github.com/IanLunn/jQuery-Parallax
   };
 
 });
-
-
-
-
