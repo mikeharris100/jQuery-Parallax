@@ -115,7 +115,7 @@ https://github.com/IanLunn/jQuery-Parallax
 
     update: function() {
       if( this._onScreen() )
-        this.$el.css('backgroundPosition', this.options.xpos + " " + (this.ypos + Math.round((this.top - (scrollTop + windowHeight)) * this.options.speed)) + "px");
+        this.$el.css('backgroundPosition', this.options.xpos + " " + (this.ypos + Math.round((this.top - scrollTop) * this.options.speed)) + "px");
     },
 
     destroy: function() {
